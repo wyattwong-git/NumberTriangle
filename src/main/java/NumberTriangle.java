@@ -90,8 +90,17 @@ public class NumberTriangle {
      *
      */
     public int retrieve(String path) {
-        // TODO implement this method
-        return -1;
+        NumberTriangle value = this;
+        for (int i = 0; i < path.length(); i++) {
+            if (path.charAt(i) == 'l') {
+                value = value.left;
+            }
+            else if (path.charAt(i) == 'r') {
+                value = value.right;
+            }
+        }
+
+        return value.root;
     }
 
     /** Read in the NumberTriangle structure from a file.
@@ -111,7 +120,7 @@ public class NumberTriangle {
         InputStream inputStream = NumberTriangle.class.getClassLoader().getResourceAsStream(fname);
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
-        List<NumberTriangle> triangle = new ArrayList<>();
+        List<NumberTriangle> prevRow = new ArrayList<>();
 
         // will need to return the top of the NumberTriangle,
         // so might want a variable for that.
@@ -123,14 +132,25 @@ public class NumberTriangle {
             // remove when done; this line is included so running starter code prints the contents of the file
             System.out.println(line);
 
+            List<NumberTriangle> currentRow = new ArrayList<>();
             String[] items = line.split(" ");
 
             for (String item : items) {
                 NumberTriangle number = new NumberTriangle(Integer.parseInt(item));
-                triangle.add(number);
+                currentRow.add(number);
             }
 
-            top = triangle.get(0);
+            if (prevRow.isEmpty()) {
+                top = currentRow.get(0);
+            }
+            else {
+                for (int i = 0; i < prevRow.size(); i++) {
+                    prevRow.get(i).left = currentRow.get(i);
+                    prevRow.get(i).right = currentRow.get(i + 1);
+                }
+            }
+
+            prevRow = currentRow;
 
             //read the next line
             line = br.readLine();
